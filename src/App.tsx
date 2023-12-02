@@ -1,38 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import * as React from 'react'
-import { ChakraProvider } from '@chakra-ui/react'
-import { Route, Routes } from "react-router-dom";
+// Import functions
+import BookingData from "./pages/BookingData.tsx";
+import LandingPage from "./pages/LandingPage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import MemberData from "./pages/MemberData.tsx";
+import RoomData from "./pages/RoomData.tsx";
+import RoomPublic from "./pages/RoomPublic.tsx";
+import RoomPublicDetail from "./pages/RoomPublicDetail.tsx";
+
+// import './App.css'
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ChakraProvider>
+    <Router>
+    <Routes>
+      <Route path="/">
+        {/* public routes l*/}
+        <Route path="" element={<LandingPage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="roompublic" element={<RoomPublic />} />
+        <Route path="roompublicdetail/:id" element={<RoomPublicDetail />} />
+
+        {/* admin route */}
+        <Route path="memberdata" element={<MemberData />} />
+        <Route path="bookingdata" element={<BookingData />} />
+        <Route path="roomdata" element={<RoomData />} />
+      </Route>
+    </Routes>
+    </Router>
+    </ChakraProvider>
+  );
 }
 
-export default App
+export default App;
+
