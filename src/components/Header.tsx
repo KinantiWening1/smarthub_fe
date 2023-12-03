@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState } from 'react';
 import {
   Button,
   Flex,
@@ -8,9 +9,30 @@ import {
   Stack,
   Text,
   useBreakpointValue,
+  useDisclosure
 } from '@chakra-ui/react'
+import AddMember from './AddMember'
+import axios from 'axios'
 
 export default function Header() {
+  //Modal states
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const handleMemberSubmit = async (memberData:any) => {
+    try {
+      // Convert Date to ISO string
+      const formattedData = {
+        ...memberData,
+      birthday: memberData.birthday.toISOString(),
+     };
+      const response = await axios.post('http://localhost:5000/member/', formattedData);
+      console.log('Member added successfully:', response.data);
+      console.log(formattedData)
+      onClose(); 
+    } catch (error) {
+      console.error('Error adding member:', error);
+    }
+  };
+
   return (
     <Stack minH={'100vh'} direction={{ base: 'column', md: 'row' }}>
       <Flex p={8} flex={1} align={'center'} justify={'center'}>
@@ -42,6 +64,7 @@ export default function Header() {
           </Text>
           <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
             <Button
+              onClick={onOpen}
               rounded={'full'}
               bg={'#6878F4'}
               color={'white'}
@@ -53,6 +76,8 @@ export default function Header() {
             <Button rounded={'full'}>See Facilities</Button>
           </Stack>
         </Stack>
+        {/* Modal Component */}
+        <AddMember disclosure={{ isOpen, onClose }} submitFunction={handleMemberSubmit} />
       </Flex>
       <Flex flex={1}>
         <Image

@@ -39,11 +39,10 @@ export default function WhatYouGet() {
         <Stack spacing={4}>
           <Text
             textTransform={'uppercase'}
-            color={'blue.400'}
+            color={'black.400'}
             fontWeight={600}
             fontSize={'sm'}
-            bg={useColorModeValue('blue.50', 'blue.900')}
-            p={2}
+            p={1}
             alignSelf={'flex-start'}
             rounded={'md'}>
             What You Get As A Member
