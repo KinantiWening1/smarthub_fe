@@ -1,7 +1,134 @@
+import { useEffect, useState } from "react";
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+
+import {
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
+    Heading,
+    Button,
+    Stack,
+    Text,
+    useDisclosure
+} from '@chakra-ui/react';
+import UpdateMember from "../components/UpdateMember";
+import DeleteMember from "../components/DeleteMember";
+  
+export interface MemberProperty {
+    idMember: number;
+    name: string;
+    birthday: Date;
+    domicile: string;
+    telp: string;
+}
 
 export default function MemberData() {
-    return (
+    const { isOpen: isOpenUpdate, onOpen: onOpenUpdate, onClose: onCloseUpdate } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 20;
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+
+	const [memberArray, setMemberArray] = useState<MemberProperty[]>([]);
+	const [isError, setIsError] = useState(false);
+	useEffect(() => {
+		fetch(
+			`https://smarthubbe-production.up.railway.app/member?page=${currentPage}`
+		).then((response) => {
+			if (response.status !== 200) {
+				setIsError(true);
+				return;
+			}
+			response.json().then((responsejson) => {
+				const data = responsejson.data;
+				setMemberArray([...new Set(memberArray.concat(data))]);
+			});
+			return;
+		});
+	}, [currentPage]);
+    
+    const currentRows = memberArray.slice(indexOfFirstRow, indexOfLastRow);
+    const totalPages = Math.ceil(memberArray.length / rowsPerPage);
+
+    const nextPage = () => {
+        if (currentPage < totalPages) {
+        setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+        }
+    };
+
+	return (
+		<>
         <Navbar status="admin"/>
+        {!isError && (
+            <Stack minH={'100vH'} px={32} mb={10}>
+                <TableContainer>
+                    <Heading color={"#6878F4"} py={10}>Members of Coworking Space</Heading>
+                    <Table variant="striped" colorScheme='blue'>
+                        <TableCaption>Coworking Space Member Data</TableCaption>
+                        <Thead>
+                        <Tr>
+                            <Th>Member ID</Th>
+                            <Th>Name</Th>
+                            <Th>Birthday</Th>
+                            <Th>Domicile</Th>
+                            <Th>Contact</Th>
+                        </Tr>
+                        </Thead>
+                        <Tbody>
+                        {currentRows.map((row) => (
+                            <Tr key={row.idMember}>
+                                <Td>{row.idMember}</Td>    
+                                <Td>{row.name}</Td>
+                                <Td>{new Date(row.birthday).toLocaleDateString('en-US', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                    })}
+                                </Td>
+                                <Td>{row.domicile}</Td>
+                                <Td>{row.telp}</Td>
+                                <Td>
+                                    <Button colorScheme="teal" mr={2}
+                                    onClick={onOpenUpdate}>
+                                        Update
+                                    </Button>
+                                    <UpdateMember disclosure={{ isOpenUpdate, onCloseUpdate }} />
+                                    <Button colorScheme="red"
+                                    onClick={onOpenDelete}>
+                                        Delete
+                                    </Button>
+                                    <DeleteMember disclosure={{ isOpenDelete, onCloseDelete }} />
+                                </Td>
+                            </Tr>
+                        ))}
+                        </Tbody>
+                    </Table>
+                </TableContainer>
+                <Stack align={"center"} direction={"row"} p={5}>
+                    <Button bg={"#6878F4"} color={"#FFFFFF"} onClick={prevPage} disabled={currentPage === 1}>
+                        Previous
+                    </Button>
+                    <Text px={5}>Page {currentPage} of {totalPages}</Text>
+                    <Button bg={"#6878F4"} color={"#FFFFFF"} onClick={nextPage} disabled={currentPage === totalPages}>
+                        Next
+                    </Button>
+                </Stack>
+            </Stack>
+        )}
+        <Footer/>
+		</>
     );
 }
