@@ -1,89 +1,87 @@
 import {
-  Box,
-  Center,
-  useColorModeValue,
-  Heading,
-  Text,
-  Stack,
-  Image,
-  Button,
-} from '@chakra-ui/react';
-import { useEffect } from 'react';
+	Box,
+	useColorModeValue,
+	Heading,
+	Text,
+	Stack,
+	Image,
+	Button,
+} from "@chakra-ui/react";
+import { FC } from "react";
 
 import { Link as RouterLink } from "react-router-dom";
-  
-  const IMAGE =
-    '/room1.jpg'
-  
-  const customButtonStyle = {
-      backgroundColor: '#6878F4', 
-      color: 'white',        
-  };
-  const RoomCards = () => {
-    // useEffect (() => {
-    //   fetch('http://localhost:5000/room')
-    // }, [])
-    return (
-      <Box
-      role={'group'}
-      p={6}
-      maxW={'330px'}
-      w={'full'}
-      bg={useColorModeValue('white', 'gray.800')}
-      boxShadow={'2xl'}
-      rounded={'lg'}
-      pos={'relative'}
-      zIndex={1}
-      justifyContent={"center"}
-    >
-      <Box
-        rounded={'lg'}
-        mt={-12}
-        pos={'relative'}
-        height={'230px'}
-      >
-        <Image
-          rounded={'lg'}
-          height={230}
-          width={282}
-          objectFit={'cover'}
-          src={IMAGE}
-          alt="#"
-        />
-      </Box>
-      <Stack pt={10} align={'center'}>
-        <Text color={'gray.500'} fontSize={'sm'} textTransform={'uppercase'}>
-          Meeting Room
-        </Text>
-        <Heading fontSize={'2xl'} fontFamily={'body'} fontWeight={800} color={"blue"}>
-          Jujutsu
-        </Heading>
-        <Stack direction={'row'} align={'center'}>
-          <Text fontWeight={500} fontSize={'xl'}>
-            Rp15.000
-          </Text>
-        </Stack>
-        <Button colorScheme="blue" as={RouterLink} to="/room1data" style={customButtonStyle}>
-              Lihat Details
-        </Button>
-      </Stack>
 
-      
-    </Box>
-    
-  );
-  };
+const IMAGE = "/room1.jpg";
 
-const ThreeRoomCards = () => {
-  return (
-    <Center py={12}>
-      <Stack direction="row" spacing={6}>
-        <RoomCards />
-        <RoomCards />
-        <RoomCards />
-      </Stack>
-    </Center>
-  );
+const customButtonStyle = {
+	backgroundColor: "#6878F4",
+	color: "white",
 };
-
-export default ThreeRoomCards;
+export interface RoomProperty {
+	idRoom: number;
+	roomName: string;
+	roomType: string;
+	roomSize: number;
+	capacity: number;
+	availability: string;
+	price: number;
+	description: string;
+}
+export interface CardProps {
+	cardProperty: RoomProperty;
+}
+const RoomCards: FC<CardProps> = ({ cardProperty }) => {
+	return (
+		<Box
+			role={"group"}
+			p={6}
+			bg={useColorModeValue("white", "gray.800")}
+			boxShadow={"2xl"}
+			rounded={"lg"}
+			zIndex={1}
+			justifyContent={"center"}
+			alignItems={"center"}
+			display={"flex"}
+			flexDir={"column"}
+		>
+			<Box rounded={"lg"} height={"230px"}>
+				<Image
+					rounded={"lg"}
+					height={230}
+					width={"100%"}
+					objectFit={"cover"}
+					src={IMAGE}
+					alt="#"
+				/>
+			</Box>
+			<Stack pt={10} align={"center"}>
+				<Text color={"gray.500"} fontSize={"sm"} textTransform={"uppercase"}>
+					{cardProperty.roomType}
+				</Text>
+				<Heading
+					fontSize={"2xl"}
+					fontFamily={"body"}
+					fontWeight={800}
+					color={"blue"}
+					textAlign={"center"}
+				>
+					{cardProperty.roomName}
+				</Heading>
+				<Stack direction={"row"} align={"center"}>
+					<Text fontWeight={500} fontSize={"xl"}>
+						Rp{cardProperty.price}
+					</Text>
+				</Stack>
+				<Button
+					colorScheme="blue"
+					as={RouterLink}
+					to={"/roompublicdetail/" + cardProperty.idRoom}
+					style={customButtonStyle}
+				>
+					Lihat Details
+				</Button>
+			</Stack>
+		</Box>
+	);
+};
+export default RoomCards;
