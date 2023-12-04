@@ -7,7 +7,6 @@ import {
   Stack,
   Image,
   Button,
-  Colors,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 

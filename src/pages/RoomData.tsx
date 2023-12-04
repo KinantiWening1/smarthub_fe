@@ -1,8 +1,20 @@
-export default function RoomData() {
+
+import { Heading, VStack } from '@chakra-ui/react';
+import Navbar from '../components/Navbar'
+import ThreeRoomCards from '../components/RoomCards'
+import CreateRoom from '../components/modalCreateRoom'
+
+export default function RoomDate() {
     return (
-        // Your JSX code for the login page
-        <div>
-          {/* Login form, input fields, buttons, etc. */}
-        </div>
-      );
+      <>
+      <Navbar status="public"/>
+      <VStack justifyContent={"center"}>
+      <Heading textAlign={"center"} py={8}>Fasilitas yang Dimiliki</Heading>
+      <CreateRoom />
+      </VStack>
+      
+      <ThreeRoomCards />
+      <ThreeRoomCards />
+      </>
+    );
 }
