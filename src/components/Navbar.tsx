@@ -92,7 +92,7 @@ import {
                   textColor: 'blue',
                 }}
                 as={RouterLink}
-                to={isAdmin ? "/roomdataadmin" : "/roomdatapublic"}
+                to={isAdmin ? "/roomdata" : "/roompublic"}
               >
                 Data Fasilitas
               </Link>
