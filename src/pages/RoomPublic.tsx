@@ -1,8 +1,15 @@
+
+import { Heading } from '@chakra-ui/react';
+import Navbar from '../components/Navbar'
+import ThreeRoomCards from '../components/RoomCards'
+
 export default function RoomPublic() {
     return (
-        // Your JSX code for the login page
-        <div>
-          {/* Login form, input fields, buttons, etc. */}
-        </div>
-      );
+      <>
+      <Navbar status="public"/>
+      <Heading textAlign={"center"} py={8}>Fasilitas yang Tersedia</Heading>
+      <ThreeRoomCards />
+      <ThreeRoomCards />
+      </>
+    );
 }

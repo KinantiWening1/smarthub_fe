@@ -10,18 +10,19 @@ import RoomPublicDetail from "./pages/RoomPublicDetail.tsx";
 // import './App.css'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
+import theme from "./styles/theme.ts";
 
 
 function App() {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
     <Router>
     <Routes>
       <Route path="/">
         {/* public routes l*/}
         <Route path="" element={<LandingPage />} />
         <Route path="login" element={<LoginPage />} />
-        <Route path="roompublic" element={<RoomPublic />} />
+        <Route path="/roompublic" element={<RoomPublic />} />
         <Route path="roompublicdetail/:id" element={<RoomPublicDetail />} />
 
         {/* admin route */}
