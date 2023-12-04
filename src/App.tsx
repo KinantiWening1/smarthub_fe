@@ -1,4 +1,5 @@
 // Import functions
+import AdminPage from "./pages/AdminPage.tsx";
 import BookingData from "./pages/BookingData.tsx";
 import LandingPage from "./pages/LandingPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
@@ -19,6 +20,7 @@ function App() {
 				<Routes>
 					<Route path="/">
 						{/* public routes l*/}
+						<Route path="admin" element={<AdminPage />} />
 						<Route path="/" element={<LandingPage />} />
 						<Route path="/login" element={<LoginPage />} />
 						<Route path="/roompublic" element={<RoomPublic />} />

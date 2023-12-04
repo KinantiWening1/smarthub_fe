@@ -9,6 +9,7 @@ import {
   } from "@chakra-ui/react";
   import { Link as RouterLink } from "react-router-dom";
   import Logo from '../assets/logo_horizontal.svg';
+  import Logout from '../components/Logout'
 
   
   export default function Navbar(props: { status: string; } ){
@@ -155,7 +156,7 @@ import {
           </Flex>
   
           <Spacer mx={5} />
-  
+            
           {/* Admin Greeting */}
   
           { isAdmin &&
@@ -166,6 +167,8 @@ import {
             <Spacer mx={2} />
           </Flex>
           }
+
+          { isAdmin && <Logout/>}
       
           { isPublic && 
             <Button colorScheme="blue" mr={3} as={RouterLink} to="/login" style={customButtonStyle}>

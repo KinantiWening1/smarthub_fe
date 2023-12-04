@@ -1,8 +1,12 @@
+import Navbar from '../components/Navbar'
+import Login from '../components/Login'
+'use client'
+
 export default function LoginPage() {
-    return (
-        // Your JSX code for the login page
-        <div>
-          {/* Login form, input fields, buttons, etc. */}
-        </div>
-      );
+  return (
+    <>
+    <Navbar status="public"/>
+    <Login/>
+    </>
+  )
 }
