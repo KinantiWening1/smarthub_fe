@@ -31,6 +31,7 @@ export interface MemberProperty {
 export default function MemberData() {
     const { isOpen: isOpenUpdate, onOpen: onOpenUpdate, onClose: onCloseUpdate } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+    const [memberId, setMemberId] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 20;
     const indexOfLastRow = currentPage * rowsPerPage;
@@ -69,6 +70,23 @@ export default function MemberData() {
         }
     };
 
+    const handleOpenUpdate = (id: number) => {
+        setMemberId(id); // Set the member ID
+        onOpenUpdate();
+    };
+    const handleOpenDelete = (id: number) => {
+        setMemberId(id); // Set the member ID
+        onOpenDelete();
+    };
+    const handleCloseUpdate = () => {
+        onCloseUpdate();
+        setMemberId(0); // Reset member ID after modal is closed
+    };
+    const handleCloseDelete = () => {
+        onCloseDelete();
+        setMemberId(0); // Reset member ID after modal is closed
+    };
+
 	return (
 		<>
         <Navbar status="admin"/>
@@ -102,15 +120,22 @@ export default function MemberData() {
                                 <Td>{row.telp}</Td>
                                 <Td>
                                     <Button colorScheme="teal" mr={2}
-                                    onClick={onOpenUpdate}>
+                                    // onClick={() => {
+                                    //     setMemberId(row.idMember);
+                                    //     onOpenUpdate();
+                                    // }}>
+                                    onClick={() => handleOpenUpdate(row.idMember)}>
                                         Update
                                     </Button>
-                                    <UpdateMember disclosure={{ isOpenUpdate, onCloseUpdate }} />
+                                    
                                     <Button colorScheme="red"
-                                    onClick={onOpenDelete}>
+                                    // onClick={() => {
+                                    //     setMemberId(row.idMember);
+                                    //     onOpenDelete();
+                                    // }}>
+                                    onClick={() => handleOpenDelete(row.idMember)}>
                                         Delete
                                     </Button>
-                                    <DeleteMember disclosure={{ isOpenDelete, onCloseDelete }} />
                                 </Td>
                             </Tr>
                         ))}
@@ -126,7 +151,16 @@ export default function MemberData() {
                         Next
                     </Button>
                 </Stack>
+                <UpdateMember
+                    memberId={memberId}
+                    disclosure={{ isOpen: isOpenUpdate, onClose: handleCloseUpdate }}
+                />
+                <DeleteMember
+                    memberId={memberId}
+                    disclosure={{ isOpen: isOpenDelete, onClose: handleCloseDelete }}
+                />
             </Stack>
+            
         )}
         <Footer/>
 		</>

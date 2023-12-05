@@ -11,25 +11,19 @@ import {
   } from '@chakra-ui/react';
 
 interface DeleteMemberProps {
+    memberId: number | null;
     disclosure: {
-        isOpenDelete: boolean;
-        onCloseDelete: () => void;
+        isOpen: boolean;
+        onClose: () => void;
     }
 }
 
-const DeleteMember: React.FC<DeleteMemberProps> = ({ disclosure }) => {
-    const { isOpenDelete, onCloseDelete } = disclosure;
+const DeleteMember: React.FC<DeleteMemberProps> = ({ memberId, disclosure }) => {
+    const { isOpen, onClose } = disclosure;
     const initialRef = useRef<HTMLInputElement | null>(null);
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const id = queryParams.get('id');
-
-    const submitClose = () => {
-        onCloseDelete();
-    };
 
     const handleDelete = async () => {
-        fetch("https://smarthubbe-production.up.railway.app/member/" + id, {
+        fetch("https://smarthubbe-production.up.railway.app/member/" + memberId, {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json',},
             }).then((response) => {
@@ -37,14 +31,15 @@ const DeleteMember: React.FC<DeleteMemberProps> = ({ disclosure }) => {
 				console.log("Failed to delete");
 				return;
 			}
-			submitClose();
+			onClose()
+            window.location.reload();
 			return;
 		})
     }
 
     return (
         <>
-        <Modal initialFocusRef={initialRef} isOpen={isOpenDelete} onClose={onCloseDelete} size="xl">
+        <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay />
             <ModalContent>
             <ModalHeader
@@ -61,7 +56,7 @@ const DeleteMember: React.FC<DeleteMemberProps> = ({ disclosure }) => {
                 <Button bg={"#6878F4"} color={"#FFFFFF"} mr={3} type="submit" onClick={handleDelete}>
                     Delete
                 </Button>
-                <Button onClick={onCloseDelete}>Cancel</Button>
+                <Button onClick={onClose}>Cancel</Button>
             </ModalBody>
             </ModalContent>
         </Modal>

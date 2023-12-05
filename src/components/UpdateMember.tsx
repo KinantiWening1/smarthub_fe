@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
-import { useLocation } from "react-router-dom";
+import axios from 'axios'
+
 import {
     Button,
     Modal,
@@ -16,73 +17,88 @@ import {
   } from '@chakra-ui/react';
 
 interface UpdateMemberProps {
+    memberId: number;
     disclosure: {
-        isOpenUpdate: boolean;
-        onCloseUpdate: () => void;
+        isOpen: boolean;
+        onClose: () => void;
     }
 }
 
-const UpdateMember: React.FC<UpdateMemberProps> = ({ disclosure }) => {
-    const { isOpenUpdate, onCloseUpdate } = disclosure;
+const UpdateMember: React.FC<UpdateMemberProps> = ({ memberId, disclosure}) => {
+    const [isError, setIsError] = useState(false);
+    const { isOpen, onClose } = disclosure;
     const initialRef = useRef<HTMLInputElement | null>(null);
-    const [memberData, setMemberData] = useState({
-        name: '',
-        birthday: new Date(),
-        domicile: '',
-        telp: '',
-    });
-
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const id = queryParams.get('id');
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setMemberData({ ...memberData, [e.target.name]: e.target.value });
-    };
-    const handleDateChange = (date: Date) => {
-        setMemberData({ ...memberData, birthday: date });
-    };
-
-    const submitClose = () => {
-        onCloseUpdate();
-    };
+    const [name, setName] = useState("");
+    const [birthday, setBirthday] = useState(new Date());
+    const [domicile, setDomicile] = useState("");
+    const [telp, setTelp] = useState("");
 
     const handleUpdate = async () => {
-        fetch("https://smarthubbe-production.up.railway.app/member/" + id, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json',},
-            body: JSON.stringify(memberData),
-            }).then((response) => {
+        // try {
+        //     const formattedData = {
+        //       ...updatedData,
+        //     birthday: updatedData.birthday.toISOString(),
+        //    };
+        //     const response = await axios.put('https://smarthubbe-production.up.railway.app/member/${memberId}', updatedData);
+        //     console.log('Member added successfully:', response.data);
+        //     console.log(updatedData)
+        //     onClose(); 
+        //   } catch (error) {
+        //     console.error('Error updating member:', error);
+        //   }
+        const body = JSON.stringify({name, domicile, telp})
+
+        fetch("https://smarthubbe-production.up.railway.app/member/" + memberId, {
+            method: "PUT",
+            body,
+            headers: {
+                "Content-Type": "application/json"
+            }
+            }).then(async(response) => {
+            const responsejson = await response.json();
+            if (responsejson.status !== "valid"){
+                console.log("Failed to update");
+            }
 			if (response.status !== 200) {
 				console.log("Failed to update");
 				return;
 			}
-			submitClose();
-			return;
+            if (responsejson.status === "valid"){
+                console.log("Successfully updated", responsejson.data)
+            }
+            console.log("actual name= " + name)
+            console.log("name after update = " + responsejson.data.name)
+            onClose;
+            window.location.reload();
+            return;
 		})
     }
 
-    const [isError, setIsError] = useState(false);
     useEffect(() => {
+        console.log("init member id = " + memberId)
 		fetch(
-			`https://smarthubbe-production.up.railway.app/member/` + id
-		).then((response) => {
-			if (response.status !== 200) {
+			"https://smarthubbe-production.up.railway.app/member/" + memberId
+		).then(async (response) => {
+            const responsejson = await response.json();
+			if (responsejson === null) {
 				setIsError(true);
+                console.log("Failed to fetch")
 				return;
 			}
-			response.json().then((responsejson) => {
-				const data = responsejson.data;
-                handleChange(data)
-			});
+            setName(responsejson.name)
+            setBirthday(responsejson.birthday)
+            setDomicile(responsejson.domicile)
+            setTelp(responsejson.telp)
+            console.log("id after fetch = " + memberId)
+            console.log("birthday = " + birthday)
 			return;
 		});
-	});
+	}, [memberId !== 0]);
 
     return (
         <>
         {!isError && (
-            <Modal initialFocusRef={initialRef} isOpen={isOpenUpdate} onClose={onCloseUpdate} size="xl">
+            <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size="xl">
                 <ModalOverlay />
                 <ModalContent>
                 <ModalHeader
@@ -92,37 +108,44 @@ const UpdateMember: React.FC<UpdateMemberProps> = ({ disclosure }) => {
                     fontSize="2xl"
                     textAlign="center"
                 >
-                    Update Data Member {memberData.name}
+                    Update Data Member
                 </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb={6}>
                     <FormControl mt={4} isRequired>
                     <FormLabel>Nama</FormLabel>
-                    <Input value={memberData.name} name="name" onChange={handleChange} />
-                    </FormControl>
-                    <FormControl mt={4} isRequired>
-                    <FormLabel>Ulang Tahun</FormLabel>
-                    <DatePicker
-                        selected={memberData.birthday}
-                        onChange={handleDateChange}
-                        dateFormat="dd/MM/yyyy"
-                        wrapperClassName="datePicker"
+                    <Input placeholder={name} name="name" 
+                    onChange={(e) => {setName(e.target.value)}} 
                     />
                     </FormControl>
                     <FormControl mt={4} isRequired>
+                    <FormLabel>Ulang Tahun</FormLabel>
+                    <Input disabled value={new Date(birthday).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} />
+                    {/* <DatePicker
+                        selected={new Date()}
+                        onChange={handleDateChange}
+                        dateFormat="dd/MM/yyyy"
+                        wrapperClassName="datePicker"
+                    /> */}
+                    </FormControl>
+                    <FormControl mt={4} isRequired>
                     <FormLabel>Domisili</FormLabel>
-                    <Input value={memberData.domicile} name="domicile" onChange={handleChange} />
+                    <Input placeholder={domicile} name="domicile" 
+                    onChange={(e) => {setDomicile(e.target.value)}} 
+                    />
                     </FormControl>
                     <FormControl mt={4} isRequired>
                     <FormLabel>Telp</FormLabel>
-                    <Input value={memberData.telp} name="telp" onChange={handleChange} />
+                    <Input placeholder={telp} name="telp" 
+                    onChange={(e) => {setTelp(e.target.value)}} 
+                    />
                     </FormControl>
                 </ModalBody>
                 <ModalFooter>
                     <Button bg={"#6878F4"} color={"#FFFFFF"} mr={3} type="submit" onClick={handleUpdate}>
                         Submit
                     </Button>
-                    <Button onClick={onCloseUpdate}>Cancel</Button>
+                    <Button onClick={onClose}>Cancel</Button>
                 </ModalFooter>
                 </ModalContent>
             </Modal>
