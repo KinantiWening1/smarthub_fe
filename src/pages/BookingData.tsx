@@ -15,9 +15,9 @@ import {
   useDisclosure
   
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import AddBookingAdmin from "../components/AddBookingAdmin";
+import UpdateBooking from "../components/UpdateBooking";
 import axios from "axios";
 
 interface Room {
@@ -33,9 +33,10 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLastPage, setLastPage] = useState(false);
   const toast = useToast(); // Using Chakra UI toast
-  const navigate = useNavigate();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOpenUpdate, onOpen: onOpenUpdate, onClose: onCloseUpdate } = useDisclosure();
+
 
 
   const handleBookingSubmit = async (bookingData: any) => {
@@ -45,7 +46,7 @@ const Index = () => {
 		reservedTime: bookingData.reservedTime.toISOString(),
 	  };
   
-	  const response = await axios.post('http://localhost:5001/booking/', formattedData);
+	  const response = await axios.post('https://smarthubbe-production.up.railway.app/booking/', formattedData);
 	  console.log('Reservation added successfully:', response.data);
 	  console.log(formattedData);
 	  onClose();
@@ -60,25 +61,47 @@ const Index = () => {
   };
 
   const handleUpdateSubmit = async (bookingData: any) => {
-	try {
-	  const formattedData = {
-		...bookingData,
-		reservedTime: bookingData.reservedTime.toISOString(),
-	  };
+    try {
+      const formattedData = {
+        ...bookingData,
+        reservedTime: bookingData.reservedTime.toISOString(),
+      };
   
-	  const response = await axios.put('http://localhost:5001/booking/', formattedData);
-	  console.log('Reservation updated successfully:', response.data);
-	  console.log(formattedData);
-	  onClose();
-	} catch (error: any) { // Explicitly define 'error' as 'Error' type
-		console.error('Error updating reservation:', error);
-		toast({
-		  title: 'Error updating reservation',
-		  description: error.message, // Access 'message' property of 'Error' type 'error'
-		  status: 'error',
-		});
-	}
+      const response = await axios.put(`https://smarthubbe-production.up.railway.app/booking/${bookingData.id}`, formattedData);
+      console.log('Reservation updated successfully:', response.data);
+      console.log(formattedData);
+      onClose();
+    } catch (error: any) {
+      console.error('Error updating reservation:', error);
+      toast({
+        title: 'Error updating reservation',
+        description: error.message,
+        status: 'error',
+      });
+    }
   };
+  
+
+//   const handleUpdateSubmit = async (bookingData: any) => {
+// 	try {
+// 	  const formattedData = {
+// 		...bookingData,
+// 		reservedTime: bookingData.reservedTime.toISOString(),
+// 	  };
+  
+// 	  const response = await axios.put('http://localhost:5001/booking/', formattedData);
+// 	  console.log('Reservation updated successfully:', response.data);
+// 	  console.log(formattedData);
+// 	  onClose();
+// 	} catch (error: any) { // Explicitly define 'error' as 'Error' type
+// 		console.error('Error updating reservation:', error);
+// 		toast({
+// 		  title: 'Error updating reservation',
+// 		  description: error.message, // Access 'message' property of 'Error' type 'error'
+// 		  status: 'error',
+// 		});
+// 	}
+//   };
   
   const getNextPage = async (page : any) => {
     // const token = window.localStorage.getItem("token");
@@ -87,7 +110,7 @@ const Index = () => {
     //   return;
     // }
     try {
-      const getItems = await fetch(`http://localhost:5001/booking`, {
+      const getItems = await fetch(`https://smarthubbe-production.up.railway.app/booking/`, {
         method: "GET",
         headers: {
         //   Authorization: token,
@@ -118,7 +141,7 @@ const Index = () => {
     //   return;
     // }
     try {
-      const deleteRequest = await fetch(`http://localhost:5001/booking/${idBooking}`, {
+      const deleteRequest = await fetch(`https://smarthubbe-production.up.railway.app/booking/${idBooking}`, {
         method: "DELETE",
         headers: {
         //   Authorization: token,
@@ -186,7 +209,7 @@ const Index = () => {
     //   window.location.replace("/auth/login");
     //   return;
     // }
-    fetch("http://localhost:5001/booking/", {
+    fetch('https://smarthubbe-production.up.railway.app/booking/', {
       method: "GET",
       // headers: {
       //   Authorization: token,
@@ -216,7 +239,7 @@ const Index = () => {
       <Navbar status="admin"/>
       <Box minH="100vh" px="14" py="5" bgColor="#F4F6FC">
         <Box mb="2">
-          <Text
+          {/* <Text
             className="text-[#F875AA] font-bold text-2xl hover:cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
@@ -224,37 +247,23 @@ const Index = () => {
             }}
           >
             Back
-          </Text>
+          </Text> */}
         </Box>
         <Flex alignItems="center" justifyContent="space-between" mb="4">
           <Heading className="text-[#FFFFFF] font-extrabold text-5xl mb-8">
             Data Booking
           </Heading>
           <Button
-
-			// onClick={onOpen}
             bgColor="#6878F4"
             p="4"
             fontSize="lg"
             fontWeight="bold"
             color="white"
-			onClick={ onOpen }
-
+			      onClick={ onOpen }
           >
             Create
           </Button>
-		  {/* {showCreateModal && (
-			<AddBookingAdmin
-			disclosure={{
-				isOpen: showCreateModal,
-				onClose: toggleCreateModal,
-			}}
-			submitFunction={(bookingData) => {
-				console.log('Submitted booking data:', bookingData);
-				handleBookingSubmit(bookingData); // Pass the bookingData to handleCreate function
-			}}
-			/>
-      )} */}
+
         </Flex>
 		<AddBookingAdmin disclosure={{ isOpen, onClose }} submitFunction={handleBookingSubmit} />
         <Table w="full" textAlign="center"  >
@@ -302,19 +311,21 @@ const Index = () => {
                       	w={"full"}
                       	bgColor="#6878F4"
                       	p="1"
-                    	borderRadius="lg"
-					  	color = "white"
-						onClick={ onOpen }
+                    	  borderRadius="lg"
+					  	          color = "white"
+						            onClick={onOpen}
                     >
                       Update
                     </Button>
+					          {/* <UpdateBooking disclosure={{ isOpenUpdate, onCloseUpdate } } /> */}
+                    <UpdateBooking disclosure={{ isOpenUpdate, onCloseUpdate }} />
                     <Button
-						w={"full"}
-						bgColor="#6878F4"
-						color="white"
-						p="1"
-						borderRadius="lg"
-						onClick={() => handleDelete(row.idBooking)
+                        w={"full"}
+                        bgColor="#6878F4"
+                        color="white"
+                        p="1"
+                        borderRadius="lg"
+                        onClick={() => handleDelete(row.idBooking)
                       }
                     >
                       Delete
@@ -324,6 +335,7 @@ const Index = () => {
               ))}
           </Tbody>
         </Table>
+
         <Flex alignItems="center" justifyContent="space-around">
           <Button
 		    bgColor="#050A30"
@@ -367,41 +379,6 @@ const Index = () => {
           alignItems="center"
           justifyContent="center"
         >
-          {/* <Box w="50%" mx="auto" >
-            <Heading className="text-center p-10 bg-[#FFDFDF] border-2 border-[#F875AA] rounded-xl font-bold text-xl">
-              Apakah anda yakin akan menghapus data booking?
-            </Heading>
-            <Flex  alignItems="center" justifyContent="center">
-              <Button
-					p="3"
-					borderRadius="xl"
-					w="full"
-					bgColor="#FFDFDF"
-					borderWidth="2"
-					borderColor="#F875AA"
-					onClick={(e) => {
-					e.preventDefault();
-					handleDelete(idBooking);
-					}}
-              >
-                Delete
-              </Button>
-              <Button
-                p="3"
-                borderRadius="xl"
-                w="full"
-                bgColor="#FFDFDF"
-                borderWidth="2"
-                borderColor="#F875AA"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setDeleteToggle(null);
-                }}
-              >
-                Cancel
-              </Button>
-            </Flex>
-          </Box> */}
         </Box>
       )}
     </>
