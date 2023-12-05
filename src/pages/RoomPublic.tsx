@@ -1,9 +1,12 @@
-import { Heading, Box, Grid, Flex } from "@chakra-ui/react";
+import { Heading, HStack, Grid, Flex, Button, Box } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 import { useEffect, useState, useRef } from "react";
 import RoomCard, { RoomProperty } from "../components/RoomCards";
+import { IoMdArrowBack } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 export default function RoomPublic() {
+	const router = useNavigate();
 	const page = useRef(0);
 	const observerTarget = useRef(null);
 	const [roomArray, setRoomArray] = useState<RoomProperty[]>([]);
@@ -63,8 +66,22 @@ export default function RoomPublic() {
 	return (
 		<>
 			<Navbar status="public" />
+			<HStack p={10} pb={0} justifyContent={"space-between"}>
+				<Button
+					rounded={"full"}
+					w="5em"
+					h="5em"
+					onClick={(e) => {
+						e.preventDefault();
+						//Change this later
+						router("/roompublic");
+					}}
+				>
+					<IoMdArrowBack size="2em" />
+				</Button>
+			</HStack>
 			{!isError && roomArray.length !== 0 && (
-				<Box margin={50} minH={"calc(100vh)"}>
+				<Box margin={50} marginTop={0} minH={"calc(100vh)"}>
 					<Heading textAlign={"center"} py={8}>
 						Fasilitas yang Tersedia
 					</Heading>

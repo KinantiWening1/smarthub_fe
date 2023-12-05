@@ -44,25 +44,27 @@ export default function RoomPublicDetail() {
 	return (
 		<>
 			<Navbar status="public" />
+			<HStack p={10} pb={0} justifyContent={"start"}>
+				<Button
+					rounded={"full"}
+					w="5em"
+					h="5em"
+					onClick={(e) => {
+						e.preventDefault();
+						router("/roompublic");
+					}}
+				>
+					<IoMdArrowBack size="2em" />
+				</Button>
+			</HStack>
 			{!isError && !isLoading && roomData !== null && (
 				<Flex
 					flexDirection={"column"}
 					alignContent={"center"}
 					padding={20}
-					paddingTop={10}
+					paddingTop={5}
 					gap={10}
 				>
-					<Button
-						rounded={"full"}
-						w="5em"
-						h="5em"
-						onClick={(e) => {
-							e.preventDefault();
-							router("/roompublic");
-						}}
-					>
-						<IoMdArrowBack size="2em" />
-					</Button>
 					<Heading fontSize={50}>{roomData.roomName}</Heading>
 					<Flex
 						flexDir={"column"}
