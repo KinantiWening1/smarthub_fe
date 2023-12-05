@@ -65,7 +65,7 @@ export default function RoomPublic() {
 	}, [observerTarget, isError, isEnd]);
 	return (
 		<>
-			<Navbar status="public" />
+			<Navbar status="admin" />
 			<HStack p={10} pb={0} justifyContent={"space-between"}>
 				<Button
 					rounded={"full"}
