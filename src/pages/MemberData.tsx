@@ -81,10 +81,10 @@ export default function MemberData() {
                         <Thead>
                         <Tr>
                             <Th>Member ID</Th>
-                            <Th>Name</Th>
-                            <Th>Birthday</Th>
-                            <Th>Domicile</Th>
-                            <Th>Contact</Th>
+                            <Th>Nama</Th>
+                            <Th>Tanggal Lahir</Th>
+                            <Th>Domisili</Th>
+                            <Th>Nomor Kontak</Th>
                         </Tr>
                         </Thead>
                         <Tbody>
