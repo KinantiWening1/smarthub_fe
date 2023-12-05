@@ -1,9 +1,20 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { Flex, Heading, Text, Image } from "@chakra-ui/react";
+import { IoMdArrowBack } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import {
+	Flex,
+	Heading,
+	Text,
+	Image,
+	VStack,
+	Button,
+	HStack,
+} from "@chakra-ui/react";
 import { RoomProperty } from "../components/RoomCards";
 export default function RoomPublicDetail() {
+	const router = useNavigate();
 	const [roomData, setRoomData] = useState<RoomProperty | null>(null);
 	const [isError, setIsError] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,8 +49,20 @@ export default function RoomPublicDetail() {
 					flexDirection={"column"}
 					alignContent={"center"}
 					padding={20}
+					paddingTop={10}
 					gap={10}
 				>
+					<Button
+						rounded={"full"}
+						w="5em"
+						h="5em"
+						onClick={(e) => {
+							e.preventDefault();
+							router("/roompublic");
+						}}
+					>
+						<IoMdArrowBack size="2em" />
+					</Button>
 					<Heading fontSize={50}>{roomData.roomName}</Heading>
 					<Flex
 						flexDir={"column"}
@@ -49,22 +72,52 @@ export default function RoomPublicDetail() {
 						<Image
 							src="/room1.jpg"
 							w={"calc(100vw)"}
-							h={"calc(50vh)"}
+							h={"calc(80vh)"}
 							objectFit={"cover"}
 							objectPosition={"center"}
 							rounded={"lg"}
 						/>
 					</Flex>
 					<Text
-						height={"calc(50vh)"}
-						fontSize={25}
+						minHeight={"calc(50vh)"}
+						fontSize={22}
 						colorScheme="twitter"
 						size={"lg"}
 						p={5}
 						textAlign={"justify"}
+						backgroundColor={"#DFDFDF"}
+						rounded={"xl"}
 					>
 						{roomData.description}
 					</Text>
+					<VStack
+						backgroundColor={"#DFDFDF"}
+						p={10}
+						rounded={"xl"}
+						justifyContent={"flex-start"}
+						alignContent={"start"}
+						gap={10}
+					>
+						<HStack gap={10} fontSize={20} w={"100%"}>
+							<Text display={"inline-block"} fontWeight={"medium"} w={"10%"}>
+								Status
+							</Text>
+							<Text display={"inline-block"} fontWeight={"bold"}>
+								{roomData.availability}
+							</Text>
+						</HStack>
+						<HStack gap={10} fontSize={20} w={"100%"}>
+							<Text display={"inline-block"} fontWeight={"medium"} w={"10%"}>
+								Price
+							</Text>
+							<Text display={"inline-block"} fontWeight={"bold"}>
+								Rp. {roomData.price}
+							</Text>
+						</HStack>
+						<Button width={"50%"} backgroundColor={"blue"} textColor={"white"}>
+							Book Now!
+						</Button>
+					</VStack>
 				</Flex>
 			)}
 			{!isError && isLoading && roomData === null && (

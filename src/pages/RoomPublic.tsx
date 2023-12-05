@@ -87,13 +87,11 @@ export default function RoomPublic() {
 					</Heading>
 				</Flex>
 			)}
-			(
 			<Box w={"calc(100vw)"} ref={observerTarget}>
 				<Heading fontSize={20} textAlign={"center"} p={4}>
 					Is this the end..?
 				</Heading>
 			</Box>
-			)
 		</>
 	);
 }
