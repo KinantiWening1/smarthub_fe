@@ -28,7 +28,8 @@ export default function RoomPublic() {
 						return;
 					}
 					setRoomArray((current) => {
-						return current.concat(data);
+						const newArray = [...new Set(current.concat(data))];
+						return newArray;
 					});
 				});
 				return;
@@ -50,7 +51,6 @@ export default function RoomPublic() {
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting) {
-					console.log("Intersecting");
 					fetchData(page.current + 1);
 					page.current++;
 				}
@@ -87,7 +87,13 @@ export default function RoomPublic() {
 					</Heading>
 					<Grid marginX={100} templateColumns={"repeat(3, 1fr)"} gap={10}>
 						{roomArray.map((roomData, index) => {
-							return <RoomCard cardProperty={roomData} key={index} />;
+							return (
+								<RoomCard
+									redirectLink="roompublicdetail"
+									cardProperty={roomData}
+									key={index}
+								/>
+							);
 						})}
 					</Grid>
 				</Box>

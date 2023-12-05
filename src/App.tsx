@@ -5,6 +5,7 @@ import LandingPage from "./pages/LandingPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import MemberData from "./pages/MemberData.tsx";
 import RoomData from "./pages/RoomData.tsx";
+import RoomDataDetail from "./pages/RoomDataDetail.tsx";
 import RoomPublic from "./pages/RoomPublic.tsx";
 import RoomPublicDetail from "./pages/RoomPublicDetail.tsx";
 import RoomAdd from "./pages/AddRoom.tsx";
@@ -39,6 +40,7 @@ function App() {
 						<Route path="/bookingdata" element={<BookingData />} />
 						<Route path="/roomdata" element={<RoomData />} />
 						<Route path="/roomdata/add" element={<RoomAdd />} />
+						<Route path="/roomdata/edit/:id" element={<RoomDataDetail />} />
 					</Route>
 				</Routes>
 			</Router>

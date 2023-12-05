@@ -29,8 +29,9 @@ export interface RoomProperty {
 }
 export interface CardProps {
 	cardProperty: RoomProperty;
+	redirectLink: string;
 }
-const RoomCards: FC<CardProps> = ({ cardProperty }) => {
+const RoomCards: FC<CardProps> = ({ cardProperty, redirectLink }) => {
 	return (
 		<Box
 			role={"group"}
@@ -75,7 +76,7 @@ const RoomCards: FC<CardProps> = ({ cardProperty }) => {
 				<Button
 					colorScheme="blue"
 					as={RouterLink}
-					to={"/roompublicdetail/" + cardProperty.idRoom}
+					to={`/${redirectLink}/` + cardProperty.idRoom}
 					style={customButtonStyle}
 				>
 					Lihat Details

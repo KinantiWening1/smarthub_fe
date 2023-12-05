@@ -30,6 +30,7 @@ export default function RoomPublic() {
 					setRoomArray((current) => {
 						return current.concat(data);
 					});
+					return;
 				});
 				return;
 			})
@@ -97,7 +98,13 @@ export default function RoomPublic() {
 					</Heading>
 					<Grid marginX={100} templateColumns={"repeat(3, 1fr)"} gap={10}>
 						{roomArray.map((roomData, index) => {
-							return <RoomCard cardProperty={roomData} key={index} />;
+							return (
+								<RoomCard
+									redirectLink="roomdata/edit"
+									cardProperty={roomData}
+									key={index}
+								/>
+							);
 						})}
 					</Grid>
 				</Box>
