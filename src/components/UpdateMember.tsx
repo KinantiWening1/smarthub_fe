@@ -1,6 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import axios from 'axios'
 
 import {
     Button,
@@ -34,18 +32,6 @@ const UpdateMember: React.FC<UpdateMemberProps> = ({ memberId, disclosure}) => {
     const [telp, setTelp] = useState("");
 
     const handleUpdate = async () => {
-        // try {
-        //     const formattedData = {
-        //       ...updatedData,
-        //     birthday: updatedData.birthday.toISOString(),
-        //    };
-        //     const response = await axios.put('https://smarthubbe-production.up.railway.app/member/${memberId}', updatedData);
-        //     console.log('Member added successfully:', response.data);
-        //     console.log(updatedData)
-        //     onClose(); 
-        //   } catch (error) {
-        //     console.error('Error updating member:', error);
-        //   }
         const body = JSON.stringify({name, domicile, telp})
 
         fetch("https://smarthubbe-production.up.railway.app/member/" + memberId, {
@@ -121,12 +107,6 @@ const UpdateMember: React.FC<UpdateMemberProps> = ({ memberId, disclosure}) => {
                     <FormControl mt={4} isRequired>
                     <FormLabel>Ulang Tahun</FormLabel>
                     <Input disabled value={new Date(birthday).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} />
-                    {/* <DatePicker
-                        selected={new Date()}
-                        onChange={handleDateChange}
-                        dateFormat="dd/MM/yyyy"
-                        wrapperClassName="datePicker"
-                    /> */}
                     </FormControl>
                     <FormControl mt={4} isRequired>
                     <FormLabel>Domisili</FormLabel>

@@ -57,7 +57,7 @@ const Login: React.FC = () => {
                         </FormControl>
                         <FormControl id="password" isRequired>
                             <FormLabel>Password</FormLabel>
-                            <Input ref={initialRef} placeholder="Password" name="password" onChange={handleChange} bg={'white'}/>
+                            <Input ref={initialRef} type="password" placeholder="Password" name="password" onChange={handleChange} bg={'white'}/>
                         </FormControl>
                         <Button
                             as={RouterLink} to={handleLogin(account)}

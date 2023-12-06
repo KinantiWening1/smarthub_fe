@@ -134,10 +134,6 @@ export default function MemberData() {
 											<Button
 												colorScheme="teal"
 												mr={2}
-												// onClick={() => {
-												//     setMemberId(row.idMember);
-												//     onOpenUpdate();
-												// }}>
 												onClick={() => handleOpenUpdate(row.idMember)}
 											>
 												Update
@@ -145,10 +141,6 @@ export default function MemberData() {
 
 											<Button
 												colorScheme="red"
-												// onClick={() => {
-												//     setMemberId(row.idMember);
-												//     onOpenDelete();
-												// }}>
 												onClick={() => handleOpenDelete(row.idMember)}
 											>
 												Delete
