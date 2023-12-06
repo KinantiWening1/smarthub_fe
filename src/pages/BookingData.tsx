@@ -32,12 +32,20 @@ const Index = () => {
   const [deleteToggle, setDeleteToggle] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLastPage, setLastPage] = useState(false);
+  const [idBooking, setIdBooking] = useState(0);
   const toast = useToast(); // Using Chakra UI toast
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenUpdate, onOpen: onOpenUpdate, onClose: onCloseUpdate } = useDisclosure();
 
-
+  const handleOpenUpdate = (id: number) => {
+    setIdBooking(id); // Set the member ID
+    onOpenUpdate();
+  };
+  const handleCloseUpdate = () => {
+    onCloseUpdate();
+    setIdBooking(0); // Reset member ID after modal is closed
+  };
 
   const handleBookingSubmit = async (bookingData: any) => {
 	try {
@@ -60,48 +68,6 @@ const Index = () => {
 	}
   };
 
-  const handleUpdateSubmit = async (bookingData: any) => {
-    try {
-      const formattedData = {
-        ...bookingData,
-        reservedTime: bookingData.reservedTime.toISOString(),
-      };
-  
-      const response = await axios.put(`https://smarthubbe-production.up.railway.app/booking/${bookingData.id}`, formattedData);
-      console.log('Reservation updated successfully:', response.data);
-      console.log(formattedData);
-      onClose();
-    } catch (error: any) {
-      console.error('Error updating reservation:', error);
-      toast({
-        title: 'Error updating reservation',
-        description: error.message,
-        status: 'error',
-      });
-    }
-  };
-  
-
-//   const handleUpdateSubmit = async (bookingData: any) => {
-// 	try {
-// 	  const formattedData = {
-// 		...bookingData,
-// 		reservedTime: bookingData.reservedTime.toISOString(),
-// 	  };
-  
-// 	  const response = await axios.put('http://localhost:5001/booking/', formattedData);
-// 	  console.log('Reservation updated successfully:', response.data);
-// 	  console.log(formattedData);
-// 	  onClose();
-// 	} catch (error: any) { // Explicitly define 'error' as 'Error' type
-// 		console.error('Error updating reservation:', error);
-// 		toast({
-// 		  title: 'Error updating reservation',
-// 		  description: error.message, // Access 'message' property of 'Error' type 'error'
-// 		  status: 'error',
-// 		});
-// 	}
-//   };
   
   const getNextPage = async (page : any) => {
     // const token = window.localStorage.getItem("token");
@@ -169,51 +135,9 @@ const Index = () => {
   
 
 
-
-//   const handleUpdate = async () => {
-//     const token = window.localStorage.getItem("token");
-//     if (!token) {
-//       window.location.replace("/login");
-//       return;
-//     }
-//     try {
-//       const updateRequest = await fetch(`http://localhost:5001/booking`, {
-//         method: "UPDATE",
-//         headers: {
-//           Authorization: token,
-//         },
-//       });
-//       setDeleteToggle(null);
-//       if (!updateRequest.ok) {
-//         toast({
-//           title: "Failed to delete..",
-//           status: "error",
-//         });
-//         return;
-//       }
-//       toast({
-//         title: "Successfully deleted!",
-//         status: "success",
-//       });
-//     } catch (error) {
-//       toast({
-//         title: "Something went wrong...",
-//         status: "error",
-//       });
-//     }
-//   };
-
   useEffect(() => {
-    // const token = window.localStorage.getItem("token");
-    // if (!token) {
-    //   window.location.replace("/auth/login");
-    //   return;
-    // }
     fetch('https://smarthubbe-production.up.railway.app/booking/', {
-      method: "GET",
-      // headers: {
-      //   Authorization: token,
-      // },
+      method: "GET"
     })
       .then(async (response) => {
         if (response.status !== 200) {
@@ -239,15 +163,6 @@ const Index = () => {
       <Navbar status="admin"/>
       <Box minH="100vh" px="14" py="5" bgColor="#F4F6FC">
         <Box mb="2">
-          {/* <Text
-            className="text-[#F875AA] font-bold text-2xl hover:cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/dashboard/owner");
-            }}
-          >
-            Back
-          </Text> */}
         </Box>
         <Flex alignItems="center" justifyContent="space-between" mb="4">
           <Heading className="text-[#FFFFFF] font-extrabold text-5xl mb-8">
@@ -307,18 +222,22 @@ const Index = () => {
                     {row.reservedTime.toLocaleString("en-US")}
                   </Td>
                   <Td px="2" gap={4} display="flex" flexDirection="column" alignItems="center" justifyContent="space-evenly" borderWidth="1px" bgColor="white" style={{ borderColor: '#6878F4' }}>
-                    <Button
-                      	w={"full"}
-                      	bgColor="#6878F4"
-                      	p="1"
-                    	  borderRadius="lg"
-					  	          color = "white"
-						            onClick={onOpen}
-                    >
-                      Update
-                    </Button>
-					          {/* <UpdateBooking disclosure={{ isOpenUpdate, onCloseUpdate } } /> */}
-                    <UpdateBooking disclosure={{ isOpenUpdate, onCloseUpdate }} />
+                <Button
+                  w={"full"}
+                  bgColor="#6878F4"
+                  p="1"
+                  borderRadius="lg"
+                  color="white"
+                  onClick={() => handleOpenUpdate(row.idBooking)}
+                >
+                  Update
+                </Button>
+                {idBooking === row.idBooking && (
+                  <UpdateBooking
+                    idBooking={idBooking}
+                    disclosure={{ isOpen: isOpenUpdate, onClose: handleCloseUpdate }}
+                  />
+                )}
                     <Button
                         w={"full"}
                         bgColor="#6878F4"

@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import { useLocation } from "react-router-dom";
+
 import {
     Button,
     Modal,
@@ -12,138 +11,135 @@ import {
     ModalFooter,
     FormControl,
     FormLabel,
-    Input,
-    ChakraProvider,
-    extendTheme
+    Input
   } from '@chakra-ui/react';
 
-  const theme = extendTheme({
-    fonts: {
-      body: 'Roboto Bold, sans-serif',
-    },
-  });
-
 interface UpdateBookingProps {
+    idBooking: number;
     disclosure: {
-        isOpenUpdate: boolean;
-        onCloseUpdate: () => void;
+        isOpen: boolean;
+        onClose: () => void;
     }
 }
 
-const UpdateBooking: React.FC<UpdateBookingProps> = ({ disclosure }) => {
-    const { isOpenUpdate, onCloseUpdate } = disclosure;
-    const initialRef = useRef<HTMLInputElement | null>(null);
-    const [bookingData, setBookingData] = useState({
-        idRoom: '',
-        bookerName: '',
-        reservedTime: new Date()
+  
+  const UpdateBooking: React.FC<UpdateBookingProps> = ({ idBooking, disclosure }) => {
 
-    });
-
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const id = queryParams.get('id');
-
-    
-
-    const handleUpdate = async () => {
-        fetch("https://smarthubbe-production.up.railway.app/booking/" + id, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json',},
-            body: JSON.stringify(bookingData),
-            }).then((response) => {
-			if (response.status !== 200) {
-				console.log("Failed to update");
-				return;
-			}
-			return;
-		})
-    }
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e && e.target) {
-        const { name, value } = e.target;
-        setBookingData({ ...bookingData, [name]: value });
-      }
-    };
-
-    const handleDateChange = (date: Date) => {
-      setBookingData({ ...bookingData, reservedTime: date });
-    };
 
     const [isError, setIsError] = useState(false);
+    const { isOpen, onClose } = disclosure;
+    const initialRef = useRef<HTMLInputElement | null>(null);
+    const [idRoom, setIdRoom] = useState("");
+    const [bookerName, setBookerName] = useState("");
+    const [reservedTime, setReservedTime] = useState(new Date());
+
+
+    const handleUpdate = async () => {
+        const body = JSON.stringify({ idRoom, bookerName, reservedTime });
+        
+        try {
+            console.log(body)
+            const response = await fetch(`https://smarthubbe-production.up.railway.app/booking/${idBooking}`, {
+            // const response = await fetch(`http://localhost:5001/booking/${idBooking}`, {
+                method: "PUT",
+                body,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            console.log(response.status)
+
+            const responsejson = await response.json();
+    
+            if (response.status !== 200 || responsejson.status !== "valid") {
+                console.log("Failed to update");
+                return;
+            }
+    
+            console.log("Successfully updated", responsejson.data);
+    
+            // Check if responsejson.data exists before accessing its properties
+            if (responsejson.data && responsejson.data.bookerName) {
+                console.log("bookername after update =", responsejson.data.bookerName);
+            }
+    
+            onClose();
+    
+            window.location.reload();
+        } catch (error) {
+            console.error('Error updating data:', error);
+        }
+    };
+
+
+
     useEffect(() => {
-		fetch(
-			`https://smarthubbe-production.up.railway.app/booking/` + id
-		).then((response) => {
-			if (response.status !== 200) {
-				setIsError(true);
-				return;
-			}
-			response.json().then((responsejson) => {
-				const data = responsejson.data;
-            handleChange(data)
-			});
-			return;
-		});
-	});
-  
-  // const submitClose = () => {
-  //   submitFunction(bookingData);
-  //   onCloseUpdate();
-  // };
+        if (idBooking) {
+            fetch(`https://smarthubbe-production.up.railway.app/booking/` + idBooking)
+                .then(async (response) => {
+                    const responsejson = await response.json();
+                    if (responsejson) {
+                        setIdRoom(responsejson.idRoom);
+                        setBookerName(responsejson.bookerName);
+                        setReservedTime(new Date(responsejson.reservedTime));
+                    } else {
+                        setIsError(true);
+                    }
+                })
+                .catch((error) => {
+                    setIsError(true);
+                    console.error('Error fetching data:', error);
+                });
+        }
+    }, [idBooking !== 0]);
+    
 
+    return (
+        <>
+        {!isError && (
+            <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size="xl">
+                <ModalOverlay />
+                <ModalContent>
+                <ModalHeader
+                    fontWeight="bold"
+                    color="#02033B"
+                    fontFamily="Roboto"
+                    fontSize="2xl"
+                    textAlign="center"
+                >
+                    Update Data Booking
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb={6}>
+                    <FormControl mt={4} isRequired>
+                    <FormLabel>ID ROOM</FormLabel>
+                    <Input placeholder={idRoom} name="id Room" 
+                    onChange={(e) => {setIdRoom(e.target.value)}} 
+                    />
+                    </FormControl>
+                    <FormControl mt={4} isRequired>
+                    <FormLabel>Booker Name</FormLabel>
+                    <Input placeholder={bookerName} name="booker name" 
+                    onChange={(e) => {setBookerName(e.target.value)}} 
+                    />
+                    </FormControl>
+                    <FormControl mt={4} isRequired>
+                    <FormLabel>Reserved Time</FormLabel>
+                    <Input placeholder={new Date(reservedTime).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} />
+                    </FormControl>
+                </ModalBody>
+                <ModalFooter>
+                        <Button bg="#6878F4" color="#FFFFFF" mr={3} type="submit" onClick={handleUpdate}>
+                            Update
+                        </Button>
 
-  return (
-    <ChakraProvider theme={theme}>
-      <Modal initialFocusRef={initialRef} isOpen={isOpenUpdate} onClose={onCloseUpdate} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader fontWeight="bold" color="#02033B" fontFamily="Roboto" fontSize="2xl" textAlign="center">
-            Update Booking
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl mt={4} isRequired>
-              <FormLabel>ID Room</FormLabel>
-              <Input
-                ref={initialRef}
-                placeholder="ID Room"
-                name="idRoom"
-                onChange={handleChange}
-                value={bookingData.idRoom}
-              />
-            </FormControl>
-            <FormControl mt={4} isRequired>
-              <FormLabel>Booker Name</FormLabel>
-              <Input
-                ref={initialRef}
-                placeholder="Booker Name"
-                name="bookerName"
-                onChange={handleChange}
-                value={bookingData.bookerName}
-              />
-            </FormControl>
-            <FormControl mt={4} isRequired>
-              <FormLabel>Reserved Time</FormLabel>
-              <DatePicker
-                selected={bookingData.reservedTime}
-                onChange={handleDateChange}
-                dateFormat="dd/MM/yyyy"
-                wrapperClassName="datePicker"
-              />
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="purple" mr={3} type="submit" onClick={handleUpdate}>
-              Update
-            </Button>
-            <Button onClick={onCloseUpdate}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </ChakraProvider>
-  );
+                    <Button onClick={onClose}>Cancel</Button>
+                </ModalFooter>
+                </ModalContent>
+            </Modal>
+        )}
+        </>
+    );
 };
 
 export default UpdateBooking;
