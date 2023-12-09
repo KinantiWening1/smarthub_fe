@@ -87,8 +87,6 @@ import {
             </Box>
             }
   
-            {
-              (isAdmin || isPublic) &&
             <Box
               mx={10}
               position="relative"
@@ -100,7 +98,7 @@ import {
                 color: 'blue',
                 bgColor: '#F4F6FC',
               }}
-            >
+            > {isAdmin && 
               <Link
                 fontSize="md"
                 fontWeight="bold" 
@@ -111,10 +109,20 @@ import {
                 to={isAdmin ? "/roomdata" : "/roompublic"}
               >
                 Data Fasilitas
-              </Link>
-              
+              </Link>}
+              {isPublic && 
+              <Link
+                fontSize="md"
+                fontWeight="bold" 
+                _hover={{
+                  textColor: 'blue',
+                }}
+                as={RouterLink}
+                to={isAdmin ? "/roomdata" : "/roompublic"}
+              >
+                Reservasi Fasilitas
+              </Link>}
             </Box>
-            }
   
             {
               isAdmin &&
