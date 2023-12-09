@@ -33,14 +33,30 @@ import {
           maxWidth="100%"
           marginX="auto"
           position="relative"
-        >
-          <Image
-            src={Logo}
-            alt="Logo"
-            boxSize={40}
-            h={12}
-            objectFit="contain"
-          />
+        > 
+          {isAdmin &&
+            <Link as={RouterLink} to="/admin">
+              <Image
+                src={Logo}
+                alt="Logo"
+                boxSize={40}
+                h={12}
+                objectFit="contain"
+              />
+            </Link>
+          }
+
+          {isPublic &&
+            <Link as={RouterLink} to="/">
+              <Image
+                src={Logo}
+                alt="Logo"
+                boxSize={40}
+                h={12}
+                objectFit="contain"
+              />
+            </Link>
+          }
   
           {/* Links */}
           <Flex display={{ base: "none", md: "flex" }}>

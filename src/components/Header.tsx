@@ -8,10 +8,12 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-  useDisclosure
+  useDisclosure,
+  Link
 } from '@chakra-ui/react'
 import AddMember from './AddMember'
 import axios from 'axios'
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Header() {
   //Modal states
@@ -23,7 +25,7 @@ export default function Header() {
         ...memberData,
       birthday: memberData.birthday.toISOString(),
      };
-      const response = await axios.post('http://localhost:5000/member/', formattedData);
+      const response = await axios.post('https://smarthubbe-production.up.railway.app/member/', formattedData);
       console.log('Member added successfully:', response.data);
       console.log(formattedData)
       onClose(); 
@@ -72,7 +74,9 @@ export default function Header() {
               }}>
               Enroll as Member
             </Button>
-            <Button rounded={'full'}>See Facilities</Button>
+            <Link as={RouterLink} to="/roompublic">
+              <Button rounded={'full'}>See Facilities</Button>
+            </Link>
           </Stack>
         </Stack>
         {/* Modal Component */}
