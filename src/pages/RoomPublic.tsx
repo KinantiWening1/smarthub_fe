@@ -12,57 +12,67 @@ export default function RoomPublic() {
 	const [roomArray, setRoomArray] = useState<RoomProperty[]>([]);
 	const [isError, setIsError] = useState<boolean>(false);
 	const [isEnd, setIsEnd] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState(false); 
+	const hasFetchedInitialData = useRef(false); // Ref to track initial fetch
 
-	const fetchData = (pageInput: number) => {
-		setIsError(false);
-		fetch(`https://smarthubbe-production.up.railway.app/room?page=${pageInput}`)
-			.then((response) => {
-				if (response.status !== 200) {
-					setIsError(true);
-					return;
-				}
-				response.json().then((responsejson) => {
-					const data = responsejson.data;
-					if (data.length === 0) {
-						setIsEnd(true);
-						return;
-					}
-					setRoomArray((current) => {
-						const newArray = [...new Set(current.concat(data))];
-						return newArray;
-					});
-				});
-				return;
-			})
-			.catch((err) => {
-				console.error(err);
-				setIsError(true);
-				return;
-			});
-	};
+	const fetchData = (pageInput=0) => {
+        if (isLoading) return; // Prevent fetching if already loading
+        setIsLoading(true);
+        setIsError(false);
+        fetch(`https://smarthubbe-production.up.railway.app/room?page=${pageInput}`)
+            .then(response => {
+                if (response.status !== 200) {
+                    setIsError(true);
+                    setIsLoading(false);
+                    return;
+                }
+                return response.json();
+            })
+            .then(responsejson => {
+                if (responsejson && responsejson.data) {
+                    const data = responsejson.data;
+                    if (data.length === 0) {
+                        setIsEnd(true);
+                    } else {
+                        setRoomArray(current => [...new Set(current.concat(data))]);
+                    }
+                }
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setIsError(true);
+                setIsLoading(false);
+            });
+    };
 
-	useEffect(() => {
-		fetchData(page.current);
-	}, []);
+    useEffect(() => {
+        if (!hasFetchedInitialData.current) {
+            console.log("Initial Fetch");
+            fetchData();
+            hasFetchedInitialData.current = true;
+        }
+    }, []);
 
-	useEffect(() => {
-		if (isEnd || isError) return;
-		const currentElement = observerTarget.current;
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting) {
-					fetchData(page.current + 1);
-					page.current++;
-				}
-			},
-			{ threshold: 0.05 }
-		);
-		if (currentElement) observer.observe(currentElement);
-		return () => {
-			//eslint-disable-next-line
-			if (currentElement) observer.unobserve(currentElement);
-		};
-	}, [observerTarget, isError, isEnd]);
+    useEffect(() => {
+        if (isEnd || isError || isLoading) return;
+
+        const currentElement = observerTarget.current;
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                console.log("Intersection Observer Triggered");
+                fetchData(page.current + 1);
+                page.current++;
+            }
+        }, { threshold: 0.1 });
+
+        if (currentElement) observer.observe(currentElement);
+
+        return () => {
+            if (currentElement) observer.unobserve(currentElement);
+        };
+    }, [observerTarget, isError, isEnd, isLoading]);
+	
 	return (
 		<>
 			<Navbar status="public" />
